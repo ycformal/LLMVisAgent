@@ -1,6 +1,4 @@
 import os
-# Enforce the download/cache directory for Hugging Face models.
-os.environ["HF_HOME"] = "/home/hice1/yxu846/scratch/models"
 import numpy as np
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
