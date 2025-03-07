@@ -1,0 +1,25 @@
+Question: There are more than three people in the right image.
+
+Reference Answer: False
+
+Left image URL: https://s3-media1.fl.yelpcdn.com/bphoto/p8bBJyOW66EU5qqWePTqIQ/ls.jpg
+
+Right image URL: https://buffetoblog.files.wordpress.com/2009/01/guys-eating-huge-burgers.jpg?w=652
+
+Original program:
+
+```
+The program is designed to evaluate the given statement and determine if it is true or false.
+```
+Program:
+
+```
+ANSWER0=VQA(image=IMAGE,question="Is 'There are more than three people in the right image.' true or false?")
+FINAL_RESULT=RESULT(var=ANSWER0)
+```
+Rationale:
+
+<hr><div><b><span style='color: blue;'>ANSWER0</span></b>=<b><span style='color: red;'>VQA</span></b>(<b><span style='color: darkorange;'>image</span></b>=<img style="vertical-align:middle" src="data:image/jpeg;base64,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">,&nbsp;<b><span style='color: darkorange;'>question</span></b>='Is 'There are more than three people in the right image.' true or false?')=<b><span style='color: green;'>true</span></b></div><hr><div><b><span style='color: red;'>RESULT</span></b> -> <b><span style='color: blue;'>ANSWER0</span></b> -> <b><span style='color: green;'>true</span></b></div><hr>
+
+Answer: true
+

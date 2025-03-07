@@ -1,0 +1,25 @@
+Question: The right image contains a circular pizza with one slice being removed.
+
+Reference Answer: False
+
+Left image URL: http://1.bp.blogspot.com/-ubemnEaKbF4/UVDBjp5pV-I/AAAAAAAAWXs/cNGxDe2yMjM/s1600/papa-johns-double-pepperoni-pizza.jpg
+
+Right image URL: https://s3-media4.fl.yelpcdn.com/bphoto/6q4TW3-kgB_3IhNsc5sw1g/o.jpg
+
+Original program:
+
+```
+The statement is True.
+```
+Program:
+
+```
+ANSWER0=VQA(image=IMAGE,question="Is 'The right image contains a circular pizza with one slice being removed.' true or false?")
+FINAL_RESULT=RESULT(var=ANSWER0)
+```
+Rationale:
+
+<hr><div><b><span style='color: blue;'>ANSWER0</span></b>=<b><span style='color: red;'>VQA</span></b>(<b><span style='color: darkorange;'>image</span></b>=<img style="vertical-align:middle" src="data:image/jpeg;base64,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">,&nbsp;<b><span style='color: darkorange;'>question</span></b>='Is 'The right image contains a circular pizza with one slice being removed.' true or false?')=<b><span style='color: green;'>false</span></b></div><hr><div><b><span style='color: red;'>RESULT</span></b> -> <b><span style='color: blue;'>ANSWER0</span></b> -> <b><span style='color: green;'>false</span></b></div><hr>
+
+Answer: false
+

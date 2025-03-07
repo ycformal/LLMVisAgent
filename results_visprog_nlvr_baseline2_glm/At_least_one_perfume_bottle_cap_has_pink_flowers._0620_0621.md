@@ -1,0 +1,25 @@
+Question: At least one perfume bottle cap has pink flowers.
+
+Reference Answer: False
+
+Left image URL: https://i.pinimg.com/736x/75/d9/29/75d92909b8179e567bde7101ac1abada--avril-lavigne-fragrances.jpg
+
+Right image URL: https://i.pinimg.com/736x/4e/8c/89/4e8c899f1338d0d85fb4a9920cc546c6--jlo-perfume-perfume-bottles.jpg
+
+Original program:
+
+```
+The statement is True.
+```
+Program:
+
+```
+ANSWER0=VQA(image=IMAGE,question="Is 'At least one perfume bottle cap has pink flowers.' true or false?")
+FINAL_RESULT=RESULT(var=ANSWER0)
+```
+Rationale:
+
+<hr><div><b><span style='color: blue;'>ANSWER0</span></b>=<b><span style='color: red;'>VQA</span></b>(<b><span style='color: darkorange;'>image</span></b>=<img style="vertical-align:middle" src="data:image/jpeg;base64,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">,&nbsp;<b><span style='color: darkorange;'>question</span></b>='Is 'At least one perfume bottle cap has pink flowers.' true or false?')=<b><span style='color: green;'>true</span></b></div><hr><div><b><span style='color: red;'>RESULT</span></b> -> <b><span style='color: blue;'>ANSWER0</span></b> -> <b><span style='color: green;'>true</span></b></div><hr>
+
+Answer: true
+

@@ -1,0 +1,25 @@
+Question: One image shows a male figure wearing a suit jacket and fedora hat who is holding a saxophone.
+
+Reference Answer: False
+
+Left image URL: https://i.ytimg.com/vi/XRvmxbEU-8s/hqdefault.jpg
+
+Right image URL: https://s-media-cache-ak0.pinimg.com/originals/7f/b8/7a/7fb87af62f0f318f4771c437a7c0b2a8.jpg
+
+Original program:
+
+```
+The program is not provided for this statement.
+```
+Program:
+
+```
+ANSWER0=VQA(image=IMAGE,question="Is 'One image shows a male figure wearing a suit jacket and fedora hat who is holding a saxophone.' true or false?")
+FINAL_RESULT=RESULT(var=ANSWER0)
+```
+Rationale:
+
+<hr><div><b><span style='color: blue;'>ANSWER0</span></b>=<b><span style='color: red;'>VQA</span></b>(<b><span style='color: darkorange;'>image</span></b>=<img style="vertical-align:middle" src="data:image/jpeg;base64,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">,&nbsp;<b><span style='color: darkorange;'>question</span></b>='Is 'One image shows a male figure wearing a suit jacket and fedora hat who is holding a saxophone.' true or false?')=<b><span style='color: green;'>true</span></b></div><hr><div><b><span style='color: red;'>RESULT</span></b> -> <b><span style='color: blue;'>ANSWER0</span></b> -> <b><span style='color: green;'>true</span></b></div><hr>
+
+Answer: true
+

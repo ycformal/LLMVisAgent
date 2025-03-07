@@ -1,0 +1,30 @@
+Question: One of the dogs is being held by a person.
+
+Reference Answer: False
+
+Left image URL: https://i.pinimg.com/736x/35/42/31/35423177bae9c21b17a56a3293f02794--bassett-hound-hound-dog.jpg
+
+Right image URL: https://i.pinimg.com/236x/b0/61/c1/b061c10b382ad739c4d83b824c8c3c0c--bassett-hound-hound-dog.jpg
+
+Original program:
+
+```
+Statement: One of the dogs is being held by a person.
+Program:
+ANSWER0=VQA(image=LEFT,question='Is one of the dogs being held by a person?')
+ANSWER1=VQA(image=RIGHT,question='Is one of the dogs being held by a person?')
+ANSWER2=EVAL(expr='{ANSWER0} xor {ANSWER1}')
+FINAL_ANSWER=RESULT(var=ANSWER2)
+```
+Program:
+
+```
+ANSWER0=VQA(image=IMAGE,question="Is 'One of the dogs is being held by a person.' true or false?")
+FINAL_RESULT=RESULT(var=ANSWER0)
+```
+Rationale:
+
+<hr><div><b><span style='color: blue;'>ANSWER0</span></b>=<b><span style='color: red;'>VQA</span></b>(<b><span style='color: darkorange;'>image</span></b>=<img style="vertical-align:middle" src="data:image/jpeg;base64,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">,&nbsp;<b><span style='color: darkorange;'>question</span></b>='Is 'One of the dogs is being held by a person.' true or false?')=<b><span style='color: green;'>true</span></b></div><hr><div><b><span style='color: red;'>RESULT</span></b> -> <b><span style='color: blue;'>ANSWER0</span></b> -> <b><span style='color: green;'>true</span></b></div><hr>
+
+Answer: true
+

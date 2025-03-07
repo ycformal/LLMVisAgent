@@ -1,0 +1,25 @@
+Question: The right image contains exactly two colorful parrots.
+
+Reference Answer: False
+
+Left image URL: https://i.ytimg.com/vi/IGBY9VmfP08/hqdefault.jpg
+
+Right image URL: https://media-cdn.tripadvisor.com/media/photo-s/05/fc/d5/9b/bristol-zoo-gardens.jpg
+
+Original program:
+
+```
+The program is designed to evaluate the given statement by asking questions about the images. It uses the VQA function to ask questions about the images and then evaluates the answers to determine if the statement is true or false.
+```
+Program:
+
+```
+ANSWER0=VQA(image=IMAGE,question="Is 'The right image contains exactly two colorful parrots.' true or false?")
+FINAL_RESULT=RESULT(var=ANSWER0)
+```
+Rationale:
+
+<hr><div><b><span style='color: blue;'>ANSWER0</span></b>=<b><span style='color: red;'>VQA</span></b>(<b><span style='color: darkorange;'>image</span></b>=<img style="vertical-align:middle" src="data:image/jpeg;base64,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">,&nbsp;<b><span style='color: darkorange;'>question</span></b>='Is 'The right image contains exactly two colorful parrots.' true or false?')=<b><span style='color: green;'>true</span></b></div><hr><div><b><span style='color: red;'>RESULT</span></b> -> <b><span style='color: blue;'>ANSWER0</span></b> -> <b><span style='color: green;'>true</span></b></div><hr>
+
+Answer: true
+

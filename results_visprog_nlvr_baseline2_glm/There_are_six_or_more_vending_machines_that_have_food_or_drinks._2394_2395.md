@@ -1,0 +1,25 @@
+Question: There are six or more vending machines that have food or drinks.
+
+Reference Answer: True
+
+Left image URL: https://pbs.twimg.com/media/CZ8M13fUcAQKCSV.jpg
+
+Right image URL: https://i.pinimg.com/736x/cc/f0/bf/ccf0bf89249d55185c6f581d2a6442f2--vending-machines-i-want-to.jpg
+
+Original program:
+
+```
+The program provided is a series of logical steps to determine if certain conditions are met based on the images provided. Each statement is evaluated step by step to determine if it is true or false. The final answer is then returned based on the evaluation of the statements.
+```
+Program:
+
+```
+ANSWER0=VQA(image=IMAGE,question="Is 'There are six or more vending machines that have food or drinks.' true or false?")
+FINAL_RESULT=RESULT(var=ANSWER0)
+```
+Rationale:
+
+<hr><div><b><span style='color: blue;'>ANSWER0</span></b>=<b><span style='color: red;'>VQA</span></b>(<b><span style='color: darkorange;'>image</span></b>=<img style="vertical-align:middle" src="data:image/jpeg;base64,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">,&nbsp;<b><span style='color: darkorange;'>question</span></b>='Is 'There are six or more vending machines that have food or drinks.' true or false?')=<b><span style='color: green;'>yes</span></b></div><hr><div><b><span style='color: red;'>RESULT</span></b> -> <b><span style='color: blue;'>ANSWER0</span></b> -> <b><span style='color: green;'>yes</span></b></div><hr>
+
+Answer: True
+
