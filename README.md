@@ -41,12 +41,12 @@ This repository is directly copied from our development environment. We are work
 
 ## Reported Accuracy
 
-![image-20250308105428098](assets\table1.png)
+![image-20250308105428098](assets/table1.png)
 
-![image-20250308105452872](E:\programming\python\visagent\assets\table3.png)
+![image-20250308105452872](assets/table3.png)
 
 ## Screenshot of Web Interface
 
-![image-20250308105636572](assets\index.png)
+![image-20250308105636572](assets/index.png)
 
-![image-20250308105655846](assets\script.png)
+![image-20250308105655846](assets/script.png)
