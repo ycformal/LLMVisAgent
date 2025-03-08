@@ -44,11 +44,11 @@ folder_name = f'results_vqav2_baseline2_{args.model}'
 if not os.path.exists(folder_name):
     os.makedirs(folder_name)
 # test my method
-data_GQA = json.load(open('./VQAv2/sampled_questions.json'))
+data_GQA = json.load(open('./datasets/VQAv2/sampled_questions.json'))
 import time
 from IPython.display import display
 for data in tqdm(data_GQA):
-    image = Image.open('./VQAv2/images/COCO_val2014_' + str(data['image_id']).zfill(12) + '.jpg')
+    image = Image.open('./datasets/VQAv2/images/COCO_val2014_' + str(data['image_id']).zfill(12) + '.jpg')
     image.thumbnail((640,640),Image.Resampling.LANCZOS)
     init_state = dict(
         IMAGE=image.convert('RGB')

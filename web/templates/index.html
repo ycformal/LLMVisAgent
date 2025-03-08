@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ensemble Model Selection</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body { padding: 20px; background: #f7f7f7; }
+    .container { background: #fff; padding: 20px; border-radius: 8px; }
+    .model-group { margin-bottom: 20px; }
+    #loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Select Ensemble Models</h2>
+  <form id="modelForm" method="POST" action="{{ url_for('select_models') }}">
+    <!-- VQA Models -->
+    <div class="model-group">
+      <h4>VQA Models</h4>
+      <div id="vqaModelsContainer">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="vqa_models" value="Salesforce/blip-vqa-capfilt-large" id="vqa1">
+          <label class="form-check-label" for="vqa1">Salesforce/blip-vqa-capfilt-large</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="vqa_models" value="dandelin/vilt-b32-finetuned-vqa" id="vqa2">
+          <label class="form-check-label" for="vqa2">dandelin/vilt-b32-finetuned-vqa</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="vqa_models" value="google/paligemma-3b-ft-vqav2-448" id="vqa3">
+          <label class="form-check-label" for="vqa3">google/paligemma-3b-ft-vqav2-448</label>
+        </div>
+      </div>
+      <button type="button" class="btn btn-link" data-toggle="modal" data-target="#vqaModal">Add other models</button>
+    </div>
+
+    <!-- LOC Models -->
+    <div class="model-group">
+      <h4>LOC Models</h4>
+      <div id="locModelsContainer">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="loc_models" value="google/owlvit-large-patch14" id="loc1">
+          <label class="form-check-label" for="loc1">google/owlvit-large-patch14</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="loc_models" value="google/owlv2-large-patch14" id="loc2">
+          <label class="form-check-label" for="loc2">google/owlv2-large-patch14</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="loc_models" value="google/owlv2-large-patch14-ensemble" id="loc3">
+          <label class="form-check-label" for="loc3">google/owlv2-large-patch14-ensemble</label>
+        </div>
+      </div>
+      <button type="button" class="btn btn-link" data-toggle="modal" data-target="#locModal">Add other models</button>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Models</button>
+  </form>
+
+  <!-- Loading spinner -->
+  <div id="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>Loading modules...</p>
+  </div>
+</div>
+
+<!-- VQA Modal -->
+<div class="modal fade" id="vqaModal" tabindex="-1" role="dialog" aria-labelledby="vqaModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Custom VQA Model</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Select Model Type:</label>
+          <select class="form-control" id="customVqaSelect">
+            <option value="Salesforce/blip-vqa-capfilt-large">Salesforce/blip-vqa-capfilt-large</option>
+            <option value="dandelin/vilt-b32-finetuned-vqa">dandelin/vilt-b32-finetuned-vqa</option>
+            <option value="google/paligemma-3b-ft-vqav2-448">google/paligemma-3b-ft-vqav2-448</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Enter HuggingFace Path:</label>
+          <input type="text" class="form-control" id="customVqaPath" placeholder="Enter model path">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="addCustomVqa">Add Model</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOC Modal -->
+<div class="modal fade" id="locModal" tabindex="-1" role="dialog" aria-labelledby="locModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Custom LOC Model</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Select Model Type:</label>
+          <select class="form-control" id="customLocSelect">
+            <option value="google/owlvit-large-patch14">google/owlvit-large-patch14</option>
+            <option value="google/owlv2-large-patch14">google/owlv2-large-patch14</option>
+            <option value="google/owlv2-large-patch14-ensemble">google/owlv2-large-patch14-ensemble</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Enter HuggingFace Path:</label>
+          <input type="text" class="form-control" id="customLocPath" placeholder="Enter model path">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="addCustomLoc">Add Model</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Counters for custom model IDs.
+  var vqaCustomCount = 0;
+  var locCustomCount = 0;
+  
+  // For VQA modal: when the "Add Model" button is clicked, add a new checkbox.
+  $("#addCustomVqa").click(function(){
+      var selectedModel = $("#customVqaSelect").val();
+      var customPath = $("#customVqaPath").val().trim();
+      if(customPath){
+          vqaCustomCount++;
+          var newId = "vqa_custom_" + vqaCustomCount;
+          var customModel = selectedModel + " | " + customPath;
+          var newCheckbox = '<div class="form-check">' +
+            '<input class="form-check-input" type="checkbox" name="vqa_models" value="' + customModel + '" id="' + newId + '" checked>' +
+            '<label class="form-check-label" for="' + newId + '">' + customModel + '</label></div>';
+          $("#vqaModelsContainer").append(newCheckbox);
+          $("#customVqaPath").val("");  // clear input after adding
+          $("#vqaModal").modal('hide');
+      } else {
+          alert("Please enter a HuggingFace path.");
+      }
+  });
+  
+  // For LOC modal: when the "Add Model" button is clicked, add a new checkbox.
+  $("#addCustomLoc").click(function(){
+      var selectedModel = $("#customLocSelect").val();
+      var customPath = $("#customLocPath").val().trim();
+      if(customPath){
+          locCustomCount++;
+          var newId = "loc_custom_" + locCustomCount;
+          var customModel = selectedModel + " | " + customPath;
+          var newCheckbox = '<div class="form-check">' +
+            '<input class="form-check-input" type="checkbox" name="loc_models" value="' + customModel + '" id="' + newId + '" checked>' +
+            '<label class="form-check-label" for="' + newId + '">' + customModel + '</label></div>';
+          $("#locModelsContainer").append(newCheckbox);
+          $("#customLocPath").val("");
+          $("#locModal").modal('hide');
+      } else {
+          alert("Please enter a HuggingFace path.");
+      }
+  });
+
+  // On form submission, check that at least one VQA and one LOC model are selected.
+  $("#modelForm").submit(function(event){
+      var vqaSelected = $("input[name='vqa_models']:checked").length;
+      var locSelected = $("input[name='loc_models']:checked").length;
+      if (vqaSelected === 0 || locSelected === 0) {
+          alert("Please select at least one VQA model and one LOC model.");
+          event.preventDefault();
+          return false;
+      }
+      $("#loading").show();
+  });
+</script>
+</body>
+</html>

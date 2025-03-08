@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LLMVisAgent</title>
+  <!-- Include Bootstrap CSS and FontAwesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <style>
+    body { padding: 20px; background: #eef2f7; }
+    .container { background: #fff; padding: 20px; border-radius: 8px; }
+    .example { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; cursor: pointer; border-radius: 4px; }
+    .image-preview { max-width: 100%; max-height: 200px; margin: 5px; }
+    .code-block { background: #272822; color: #f8f8f2; padding: 10px; border-radius: 5px; font-family: monospace; }
+    .toggle-details { cursor: pointer; }
+    .analysis { background: #f0f0f0; padding: 10px; border-radius: 4px; margin-top: 5px; }
+    .execution-step { margin-bottom: 20px; }
+    .preview img { max-height: 150px; margin: 5px; }
+    #toggleImageBtn { margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>LLMVisAgent</h2>
+  <!-- Image upload and question input -->
+  <form id="qaForm" enctype="multipart/form-data">
+    <!-- Hidden inputs to store example image URLs -->
+    <input type="hidden" id="example_image1" name="example_image1" value="">
+    <input type="hidden" id="example_image2" name="example_image2" value="">
+    
+    <div id="imageInputs">
+      <div class="form-group" id="imageInput1">
+        <label for="image1">Image 1:</label>
+        <input type="file" class="form-control image-input" id="image1" name="images[]" accept="image/*">
+        <div class="preview" id="preview1"></div>
+      </div>
+      <div class="form-group" id="imageInput2" style="display:none;">
+        <label for="image2">Image 2:</label>
+        <input type="file" class="form-control image-input" id="image2" name="images[]" accept="image/*">
+        <div class="preview" id="preview2"></div>
+      </div>
+    </div>
+    <!-- Button to add/remove second image -->
+    <button type="button" id="toggleImageBtn" class="btn btn-outline-primary">
+      <i class="fa fa-plus"></i> Add Image
+    </button>
+    
+    <div class="form-group">
+      <label id="questionLabel" for="questionInput">Question:</label>
+      <input type="text" class="form-control" id="questionInput" name="question" placeholder="Type your question" required>
+    </div>
+    <button type="button" class="btn btn-success" id="sendBtn">
+      <i class="fa fa-paper-plane"></i> Send
+    </button>
+  </form>
+  <hr>
+  <!-- Examples section -->
+  <h4>Examples</h4>
+  <div id="examplesContainer">
+    {% for example in examples %}
+      <div class="example" data-question="{{ example.question }}" data-images="{{ example.image|join(',') }}">
+        {% if example.image|length == 1 %}
+          <img src="{{ example.image[0] }}" alt="Example Image" class="image-preview">
+        {% else %}
+          <div>
+            <strong>LEFT:</strong> <img src="{{ example.image[0] }}" alt="Left Image" class="image-preview">
+            <strong>RIGHT:</strong> <img src="{{ example.image[1] }}" alt="Right Image" class="image-preview">
+          </div>
+        {% endif %}
+        <p>{{ example.question }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  <hr>
+  <!-- Output sections -->
+  <div id="scriptOutput"></div>
+  <div id="executionOutput"></div>
+  <div id="captionOutput"></div>
+  <div id="verificationOutput"></div>
+</div>
+
+<!-- jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let finalScript = ""; // Global variable to store final script after SS-Parser
+
+$(document).ready(function(){
+  // When files are selected manually, clear the hidden example inputs.
+  $(".image-input").on("change", function(){
+    $("#example_image1").val("");
+    $("#example_image2").val("");
+    var id = $(this).attr("id");
+    var previewId = "preview" + id.slice(-1);
+    var file = this.files[0];
+    if(file){
+      var url = URL.createObjectURL(file);
+      $("#" + previewId).html("<img src='" + url + "' alt='Preview'>");
+    } else {
+      $("#" + previewId).empty();
+    }
+  });
+
+  // Toggle second image input.
+  $("#toggleImageBtn").click(function(){
+    if ($("#imageInput2").is(":visible")) {
+      $("#image2").val("");
+      $("#preview2").empty();
+      $("#imageInput2").hide();
+      $(this).html('<i class="fa fa-plus"></i> Add Image');
+      $("#questionLabel").text("Question:");
+      $("#questionInput").attr("placeholder", "Type your question");
+      $("#example_image2").val("");
+    } else {
+      $("#imageInput2").show();
+      $(this).html('<i class="fa fa-minus"></i> Remove Second Image');
+      $("#questionLabel").text("Statement (describe both images):");
+      $("#questionInput").attr("placeholder", "Type a statement about two images");
+    }
+  });
+
+  // When an example is clicked, fill the form with example data.
+  $(".example").click(function(){
+      var question = $(this).data("question");
+      var images = $(this).data("images").split(',');
+      $("#questionInput").val(question);
+      // Populate the hidden fields with the example URLs.
+      $("#example_image1").val(images[0] || "");
+      $("#example_image2").val(images[1] || "");
+      // Update previews as if files were uploaded.
+      if(images.length === 2){
+          $("#imageInput2").show();
+          $("#toggleImageBtn").html('<i class="fa fa-minus"></i> Remove Second Image');
+          $("#questionLabel").text("Statement (describe both images):");
+          $("#questionInput").attr("placeholder", "Type a statement about two images");
+          $("#preview1").html("<img src='" + images[0] + "' alt='Image 1 Preview'>");
+          $("#preview2").html("<img src='" + images[1] + "' alt='Image 2 Preview'>");
+      } else {
+          $("#imageInput2").hide();
+          $("#toggleImageBtn").html('<i class="fa fa-plus"></i> Add Image');
+          $("#questionLabel").text("Question:");
+          $("#questionInput").attr("placeholder", "Type your question");
+          $("#preview1").html("<img src='" + images[0] + "' alt='Image Preview'>");
+          $("#preview2").empty();
+      }
+  });
+
+  // Function to send execution request with images.
+  function sendExecFormData(formData) {
+      $.ajax({
+          url: "/execute",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(execResp){
+              $("#executionMsg").remove();
+              execResp.html.forEach(function(item, index){
+                  var htmlPart = "";
+                  if(Array.isArray(item)){
+                      htmlPart += "<div class='d-flex justify-content-between align-items-center'>";
+                      htmlPart += "<div>" + item[0] + "</div>";
+                      htmlPart += "<div><button class='toggle-details btn btn-sm btn-outline-secondary' data-index='"+index+"' title='show ensembling details'>+</button></div>";
+                      htmlPart += "</div>";
+                      htmlPart += "<div class='details' id='details-"+index+"' style='display:none; margin-left: 20px;'>" + item[1] + "</div>";
+                  } else {
+                      htmlPart += "<div>" + item + "</div>";
+                  }
+                  $("#executionOutput").append("<div class='execution-step'>" + htmlPart + "</div><hr>");
+              });
+              $("#executionOutput").append("<div class='execution-step'><strong>Final Result: " + execResp.result + "</strong></div><hr>");
+              // If only one image is provided, perform captioning.
+              if( ($("#imageInput2").is(":hidden") && ( $("#image1")[0].files.length > 0 || $("#example_image1").val() !== "")) ){
+                  $("#executionOutput").append("<div id='captionMsg' class='execution-step'>Image captioning...</div>");
+                  $.ajax({
+                      url: "/caption",
+                      type: "POST",
+                      data: formData,
+                      processData: false,
+                      contentType: false,
+                      success: function(captionData){
+                          $("#captionMsg").remove();
+                          $("#captionOutput").html("<div class='execution-step'><strong>Caption:</strong> " + captionData.caption + "</div><hr>");
+                          $("#captionOutput").append("<div id='verifierMsg' class='execution-step'>verifying the result through output verifier...</div>");
+                          // Post caption, result, script and question to /output_verifier.
+                          $.post("/output_verifier", {
+                              caption: captionData.caption,
+                              result: execResp.result,
+                              script: finalScript,
+                              question: $("#questionInput").val()
+                          }, function(verifData){
+                              $("#verifierMsg").remove();
+                              var verifHtml = "<div class='execution-step'><strong>Verification Result:</strong> " + verifData.result + "</div>";
+                              verifHtml += "<div><button class='toggle-analysis btn btn-sm btn-outline-secondary'>Show Analysis</button>";
+                              verifHtml += "<div class='analysis' style='display:none; margin-top:10px;'>" + verifData.analysis + "</div></div>";
+                              $("#verificationOutput").html(verifHtml + "<hr>");
+                          });
+                      }
+                  });
+              }
+          }
+      });
+  }
+
+  // Handle send button click.
+  $("#sendBtn").click(function(){
+      // Clear previous outputs.
+      $("#scriptOutput").empty();
+      $("#executionOutput").empty();
+      $("#captionOutput").empty();
+      $("#verificationOutput").empty();
+      
+      var hasFile = $("#image1")[0].files.length > 0 || $("#image2")[0].files.length > 0;
+      var hasExample = $("#example_image1").val() !== "";
+      if(!hasFile && !hasExample){
+          alert("Please upload at least one image or select an example.");
+          return;
+      }
+      if($("#questionInput").val().trim() === ""){
+          alert("Please enter a question or statement.");
+          return;
+      }
+      
+      // Show "task planning" message.
+      $("#scriptOutput").html("<div class='execution-step'>task planning...</div>");
+      
+      // First, post to /solve using FormData.
+      var formData = new FormData($("#qaForm")[0]);
+      $.ajax({
+          url: "/solve",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(data){
+              finalScript = data.script; // store generated script
+              var scriptHtml = "<div class='code-block execution-step'><span style='color:#66d9ef;'>// Generated Script</span><br>";
+              data.script.split("\n").forEach(function(line){
+                  scriptHtml += "<span>" + line + "</span><br>";
+              });
+              scriptHtml += "</div>";
+              $("#scriptOutput").html(scriptHtml);
+              $("#scriptOutput").append("<div id='ssParserMsg' class='execution-step'>SS-Parser checking for syntax and semantic errors...</div>");
+              setTimeout(function(){
+                  $.post("/ssparser", {script: data.script, question: $("#questionInput").val()}, function(resp){
+                      $("#ssParserMsg").remove();
+                      finalScript = resp.script; // update final script after SS-Parser
+                      var newScriptHtml = "<div class='code-block execution-step'><span style='color:#a6e22e;'>// SS-Parsed Script</span><br>";
+                      resp.script.split("\n").forEach(function(line){
+                          newScriptHtml += "<span>" + line + "</span><br>";
+                      });
+                      newScriptHtml += "</div>";
+                      $("#scriptOutput").append(newScriptHtml);
+                      // Prepare to post to /execute.
+                      var execFormData = new FormData($("#qaForm")[0]);
+                      execFormData.append("script", resp.script);
+                      execFormData.append("question", $("#questionInput").val());
+                      // If no file is uploaded, fetch example images as blobs.
+                      if ($("#image1")[0].files.length === 0) {
+                          let fetchPromises = [];
+                          let url1 = $("#example_image1").val();
+                          if(url1){
+                              fetchPromises.push(
+                                  fetch(url1).then(r => r.blob()).then(blob => {
+                                      execFormData.append("images[]", blob, "example1.jpg");
+                                  })
+                              );
+                          }
+                          let url2 = $("#example_image2").val();
+                          if(url2){
+                              fetchPromises.push(
+                                  fetch(url2).then(r => r.blob()).then(blob => {
+                                      execFormData.append("images[]", blob, "example2.jpg");
+                                  })
+                              );
+                          }
+                          Promise.all(fetchPromises).then(function(){
+                              $("#scriptOutput").append("<div id='executionMsg' class='execution-step'>executing...</div>");
+                              sendExecFormData(execFormData);
+                          });
+                      } else {
+                          $("#scriptOutput").append("<div id='executionMsg' class='execution-step'>executing...</div>");
+                          sendExecFormData(execFormData);
+                      }
+                  });
+              }, 1000);
+          }
+      });
+  });
+
+  $(document).on('click', '.toggle-details', function(){
+      var index = $(this).data("index");
+      var detailsDiv = $("#details-"+index);
+      if(detailsDiv.is(":visible")){
+          detailsDiv.hide();
+          $(this).text("+").attr("title", "show ensembling details");
+      } else {
+          detailsDiv.show();
+          $(this).text("-").attr("title", "hide ensembling details");
+      }
+  });
+
+  $(document).on('click', '.toggle-analysis', function(){
+      var analysisDiv = $(this).siblings(".analysis");
+      if(analysisDiv.is(":visible")){
+          analysisDiv.hide();
+          $(this).text("Show Analysis");
+      } else {
+          analysisDiv.show();
+          $(this).text("Hide Analysis");
+      }
+  });
+});
+</script>
+</body>
+</html>

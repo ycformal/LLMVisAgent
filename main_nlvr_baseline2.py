@@ -48,7 +48,7 @@ if not os.path.exists(folder_name):
     os.makedirs(folder_name)
 # test my method
 data_NLVR2 = []
-with open('./NLVR2/full/test1_filtered.json', 'r') as f:
+with open('./datasets/NLVR2/full/test1_filtered.json', 'r') as f:
   for line in f:
     data_NLVR2.append(json.loads(line))
 import time
@@ -56,8 +56,8 @@ from IPython.display import display
 for data in tqdm(data_NLVR2):
     left_image_id = data['left_image_id']
     right_image_id = data['right_image_id']
-    left_image = Image.open('./NLVR2/full/' + left_image_id + '.jpg')
-    right_image = Image.open('./NLVR2/full/' + right_image_id + '.jpg')
+    left_image = Image.open('./datasets/NLVR2/full/' + left_image_id + '.jpg')
+    right_image = Image.open('./datasets/NLVR2/full/' + right_image_id + '.jpg')
     left_image.thumbnail((640,640),Image.Resampling.LANCZOS)
     right_image.thumbnail((640,640),Image.Resampling.LANCZOS)
     # image is the concatenation of left and right images

@@ -42,11 +42,11 @@ folder_name = f'results_baseline1_v1_{args.model}'
 if not os.path.exists(folder_name):
     os.makedirs(folder_name)
 # test my method
-data_GQA = json.load(open('./sampled_GQA/sampled_data.json'))
+data_GQA = json.load(open('./datasets/sampled_GQA/sampled_data.json'))
 import time
 from IPython.display import display
 for data in tqdm(data_GQA):
-    image = Image.open('./sampled_GQA/' + data['imageId'] + '.jpg')
+    image = Image.open('./datasets/sampled_GQA/' + data['imageId'] + '.jpg')
     image.thumbnail((640,640),Image.Resampling.LANCZOS)
     init_state = dict(
         IMAGE=image.convert('RGB')

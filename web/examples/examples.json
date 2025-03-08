@@ -1,0 +1,6 @@
+[
+    {"image": ["static/n164272.jpg"], "question": "Is there any grass in the picture that is not tall?"},
+    {"image": ["static/n528403.jpg"], "question": "Does the field look grassy?"},
+    {"image": ["static/n541688.jpg"], "question": "Do both the people have the same gender?"},
+    {"image": ["static/left.jpg", "static/right.jpg"], "question": "The right image depicts two side-by-side beige pugs wearing yellowish-green flotation vests and posed with their top halves out of the water."}
+]

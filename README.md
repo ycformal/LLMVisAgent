@@ -29,8 +29,24 @@ To test the full LLMVisAgent, run `python main_baseline2_v2.py --model=<model na
 
 **You need to modify LocInterpreter and VQAInterpreter in engine/step_interpreter.py to disable the ensembling of LOC and VQA. Refer to comments near/in these two classes.**
 
-Python scripts starting with "eval" are evaluation scripts. Experimental results are saved in folders starting with "results_". To get the results reported in the paper, modify the method name in the script accordingly, and run it. eval.py evaluates both GQA and NLVR, comparing two methods and outputs their accuracy, and examples where different results occur. eval_single\_\<dataset\>.py evaluates the accuracy of four datasets without comparison on different methods. It only prints the accuracy on four datasets.
+**results folder**: Python scripts starting with "eval" are evaluation scripts. Experimental results are saved in folders starting with "results_". To get the results reported in the paper, modify the method name in the script accordingly, and run it. eval.py evaluates both GQA and NLVR, comparing two methods and outputs their accuracy, and examples where different results occur. eval_single\_\<dataset\>.py evaluates the accuracy of four datasets without comparison on different methods. It only prints the accuracy on four datasets.
 
-Files ending in ".out" are log files when we are conducting experiments on a slurm server. The caption of each image and the analysis of the output verifier is recorded here if that method uses an output verifier.
+**logs folder**: Files ending in ".out" are log files when we are conducting experiments on a slurm server. The caption of each image and the analysis of the output verifier is recorded here if that method uses an output verifier.
+
+**web folder**: Our web application for LLMVisAgent. It has a user interface and is more configurable than the experiment code. To start the server, run app.py under the web folder. The default port is 5000.
+
+**datasets folder**: Contains datasets used in our paper: GQA, NLVR2 and VQAv2.
 
 This repository is directly copied from our development environment. We are working on reorganizing the file structure to facilitate people who want to reproduce our results.
+
+## Reported Accuracy
+
+![image-20250308105428098](assets\table1.png)
+
+![image-20250308105452872](E:\programming\python\visagent\assets\table3.png)
+
+## Screenshot of Web Interface
+
+![image-20250308105636572](assets\index.png)
+
+![image-20250308105655846](assets\script.png)
